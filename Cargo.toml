@@ -5,7 +5,6 @@ version = "0.1.0"
 edition = "2021"
 authors = ["Julien Bertazzo Lambert <jbertazzolambert@gmail.com>"]
 license = "MIT"
-readme = "README.md"
 homepage = "https://github.com/JLambertazzo/pokeshell"
 repository = "https://github.com/JLambertazzo/pokeshell"
 keywords = ["cli", "pokemon", "poke", "data"]
