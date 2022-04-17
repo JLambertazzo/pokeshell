@@ -1,4 +1,5 @@
 use clap::Parser;
+use pokeshell::find_pokemon;
 
 /// CLI App for Pokemon Data
 #[derive(Parser)]
@@ -14,4 +15,8 @@ struct Cli {
 fn main() {
     let args = Cli::parse();
     println!("Searching for the {}: `{}`", args.field, args.query);
+    if args.field == "pokemon" {
+        let pokemon = find_pokemon(args.query).unwrap();
+        println!("Found: {:?}", pokemon);
+    }
 }
