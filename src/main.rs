@@ -1,6 +1,6 @@
 use clap::Parser;
 
-/// CLI Interface for Pokemon Data
+/// CLI App for Pokemon Data
 #[derive(Parser)]
 #[clap(about, version)]
 struct Cli {

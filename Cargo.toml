@@ -1,8 +1,15 @@
 [package]
 name = "pokeshell"
-description = "CLI Interface for Pokemon Data"
+description = "CLI App for Pokemon Data"
 version = "0.1.0"
 edition = "2021"
+authors = ["Julien Bertazzo Lambert <jbertazzolambert@gmail.com>"]
+license = "MIT"
+readme = "README.md"
+homepage = "https://github.com/JLambertazzo/pokeshell"
+repository = "https://github.com/JLambertazzo/pokeshell"
+keywords = ["cli", "pokemon", "poke", "data"]
+categories = ["command-line-utilities"]
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
