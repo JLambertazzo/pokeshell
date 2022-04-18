@@ -1,30 +1,20 @@
 use clap::Parser;
-use pokeshell::find_pokemon;
-use anyhow::Result;
+mod cli;
+mod tool;
+use tool::pokemon;
 
 /// CLI App for Pokemon Data
 #[derive(Parser)]
 #[clap(about, version)]
-struct Cli {
-    /// type of information to search [pokemon, move, info]
-    #[clap(short,long,default_value="pokemon")]
-    field: String,
-    /// attribute to search by see long about for options
-    #[clap(short,long,default_value="name")]
-    attr: String,
-    /// What to search for
-    query: String,
+struct RootCli {
+    /// type of information to search [pokemon, move]
+    collection: String,
 }
 
-fn main() -> Result<()> {
-    let args = Cli::parse();
-    println!("Searching for the {}: `{}`", args.field, args.query);
-    if args.field == "pokemon" {
-        let pokemon = find_pokemon(args.query);
-        match pokemon {
-            Ok(_) => println!("Found: {:?}", pokemon.unwrap()),
-            Err(e) => eprintln!("{}", e),
-        }
+fn main() {
+    let args = RootCli::parse();
+    match args.collection {
+        x if x.eq("pokemon") => pokemon::use_pokemon(),
+        _ => {}
     }
-    Ok(())
 }
