@@ -1,6 +1,7 @@
 use crate::cli::Pokemon as Args;
 use anyhow::Result;
 use serde::Deserialize;
+use prettytable::{Table, cell, row, format};
 
 #[derive(Debug, Deserialize)]
 #[allow(dead_code)]
@@ -39,12 +40,28 @@ fn _find_pokemon(input: &String, category: &String) -> Result<Vec<Pokemon>> {
     Ok(vect)
 }
 
+fn _print_pokemon(pokemon: Vec<Pokemon>) {
+    let mut table = Table::new();
+    table.set_format(*format::consts::FORMAT_NO_BORDER_LINE_SEPARATOR);
+    table.set_titles(row!["DEX#","NAME","TYPE1","TYPE2","CATCH_RATE"]);
+    for p in pokemon {
+        table.add_row(row![
+            p.number.to_string(),
+            p.name,
+            p.type1,
+            p.type2,
+            p.catch_rate.to_string(),
+        ]);
+    }
+    table.printstd();
+}
+
 #[allow(dead_code)]
 pub fn use_pokemon(args: &Args) {
     let pokemon = _find_pokemon(&(args.query),&(args.category))
         .unwrap_or_default();
     if pokemon.len() > 0 {
-        println!("Found pokemon: {:?}", pokemon);
+        _print_pokemon(pokemon);
     } else {
         println!("Pokemon {} not found.", args.query);
     }
