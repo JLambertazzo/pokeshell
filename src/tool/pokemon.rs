@@ -24,20 +24,14 @@ fn _find_pokemon(input: &String, category: &String) -> Result<(Pokemon, bool)> {
     let mut rdr = csv::Reader::from_path("./src/pokemon.csv")?;
     for result in rdr.deserialize() {
         let pokemon: Pokemon = result?;
-        let value: Option<Pokemon> = match category {
-            x if x.eq("number") => if pokemon.number.to_string() == *input { Some(pokemon) } else { None },
-            x if x.eq("name") => if pokemon.name == *input { Some(pokemon) } else { None },
-            x if x.eq("type") => {
-                if pokemon.type1 == *input || pokemon.type2 == *input {
-                    Some(pokemon)
-                } else {
-                    None
-                }
-            },
-            _ => panic!("{} is not a valid category", category)
+        let value: bool = match category {
+            x if x.eq("number") => pokemon.number.to_string() == *input,
+            x if x.eq("name") => pokemon.name == *input,
+            x if x.eq("type") => pokemon.type1 == *input || pokemon.type2 == *input,
+            _ => panic!("{} is not a valid category", category),
         };
-        if value.is_some() {
-            return Ok((value.unwrap(), true));
+        if value {
+            return Ok((pokemon,value));
         }
     }
     Ok((_NULL_PKMN, false))
