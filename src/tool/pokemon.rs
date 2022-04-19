@@ -1,5 +1,5 @@
 use crate::cli::Pokemon as Args;
-use anyhow::{Context, Result};
+use anyhow::Result;
 use serde::Deserialize;
 
 #[derive(Debug, Deserialize)]
@@ -12,37 +12,38 @@ pub struct Pokemon {
     pub catch_rate: i32,
 }
 
-const _NULL_PKMN: Pokemon = Pokemon {
-    number: 0,
-    name: String::new(),
-    type1: String::new(),
-    type2: String::new(),
-    catch_rate: 0,
-};
-
-fn _find_pokemon(input: &String, category: &String) -> Result<(Pokemon, bool)> {
-    let mut rdr = csv::Reader::from_path("./src/pokemon.csv")?;
-    for result in rdr.deserialize() {
-        let pokemon: Pokemon = result?;
-        let value: bool = match category {
-            x if x.eq("number") => pokemon.number.to_string() == *input,
-            x if x.eq("name") => pokemon.name == *input,
-            x if x.eq("type") => pokemon.type1 == *input || pokemon.type2 == *input,
-            _ => panic!("{} is not a valid category", category),
-        };
-        if value {
-            return Ok((pokemon,value));
+impl Default for Pokemon {
+    fn default() -> Self {
+        Pokemon {
+            number: 0,
+            name: String::new(),
+            type1: String::new(),
+            type2: String::new(),
+            catch_rate: 0,
         }
     }
-    Ok((_NULL_PKMN, false))
+}
+
+fn _find_pokemon(input: &String, category: &String) -> Result<Vec<Pokemon>> {
+    let rdr = csv::Reader::from_path("./src/pokemon.csv")?;
+    let vect = rdr.into_deserialize()
+        .filter_map(|r: Result<Pokemon,csv::Error>| r.ok())
+        .filter(|res| {
+            match category {
+                x if x.eq("number") => res.number.to_string() == *input,
+                x if x.eq("name") => res.name == *input,
+                x if x.eq("type") => res.type1 == *input || res.type2 == *input,
+                _ => panic!("{} is not a valid category", category)
+            }
+        }).collect();
+    Ok(vect)
 }
 
 #[allow(dead_code)]
 pub fn use_pokemon(args: &Args) {
-    let (pokemon, success) = _find_pokemon(&(args.query),&(args.category))
-        .with_context(|| "Error finding pokemon")
-        .unwrap();
-    if success {
+    let pokemon = _find_pokemon(&(args.query),&(args.category))
+        .unwrap_or_default();
+    if pokemon.len() > 0 {
         println!("Found pokemon: {:?}", pokemon);
     } else {
         println!("Pokemon {} not found.", args.query);
