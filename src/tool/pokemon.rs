@@ -1,6 +1,5 @@
-use crate::cli::Cli;
+use crate::cli::Pokemon as Args;
 use anyhow::{Context, Result};
-use clap::Parser;
 use serde::Deserialize;
 
 #[derive(Debug, Deserialize)]
@@ -33,9 +32,8 @@ fn _find_pokemon(name: &String) -> Result<(Pokemon, bool)> {
 }
 
 #[allow(dead_code)]
-pub fn use_pokemon() {
-    let Cli::Pokemon(args) = Cli::parse();
-    let (pokemon, success) = _find_pokemon(&args.query)
+pub fn use_pokemon(args: &Args) {
+    let (pokemon, success) = _find_pokemon(&(args.query))
         .with_context(|| "Error finding pokemon")
         .unwrap();
     if success {

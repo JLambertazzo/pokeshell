@@ -1,7 +1,14 @@
-use clap::Parser;
+use clap::{Parser,Subcommand};
 
 #[derive(Parser)]
-pub enum Cli {
+#[clap(author,version,about)]
+pub struct Cli {
+    #[clap(subcommand)]
+    pub command: Commands,
+}
+
+#[derive(Subcommand)]
+pub enum Commands {
     Pokemon(Pokemon),
 }
 
