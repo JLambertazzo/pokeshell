@@ -16,6 +16,12 @@ pub enum Commands {
 #[derive(clap::Args)]
 #[clap(about, version)]
 pub struct Pokemon {
-    /// pokemon to search for
+    /// value to search pokemon by [name,number,type]
+    #[clap(short,long,default_value="name")]
+    pub category: String,
+    /// values to filter output
+    #[clap(short,long,default_value="number,name,type1,type2,catch_rate")]
+    pub filter: String,
+    /// input to search
     pub query: String,
 }

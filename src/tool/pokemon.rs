@@ -20,12 +20,24 @@ const _NULL_PKMN: Pokemon = Pokemon {
     catch_rate: 0,
 };
 
-fn _find_pokemon(name: &String) -> Result<(Pokemon, bool)> {
+fn _find_pokemon(input: &String, category: &String) -> Result<(Pokemon, bool)> {
     let mut rdr = csv::Reader::from_path("./src/pokemon.csv")?;
     for result in rdr.deserialize() {
         let pokemon: Pokemon = result?;
-        if pokemon.name == *name {
-            return Ok((pokemon, true));
+        let value: Option<Pokemon> = match category {
+            x if x.eq("number") => if pokemon.number.to_string() == *input { Some(pokemon) } else { None },
+            x if x.eq("name") => if pokemon.name == *input { Some(pokemon) } else { None },
+            x if x.eq("type") => {
+                if pokemon.type1 == *input || pokemon.type2 == *input {
+                    Some(pokemon)
+                } else {
+                    None
+                }
+            },
+            _ => panic!("{} is not a valid category", category)
+        };
+        if value.is_some() {
+            return Ok((value.unwrap(), true));
         }
     }
     Ok((_NULL_PKMN, false))
@@ -33,7 +45,7 @@ fn _find_pokemon(name: &String) -> Result<(Pokemon, bool)> {
 
 #[allow(dead_code)]
 pub fn use_pokemon(args: &Args) {
-    let (pokemon, success) = _find_pokemon(&(args.query))
+    let (pokemon, success) = _find_pokemon(&(args.query),&(args.category))
         .with_context(|| "Error finding pokemon")
         .unwrap();
     if success {
