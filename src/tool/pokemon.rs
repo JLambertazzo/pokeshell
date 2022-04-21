@@ -1,7 +1,7 @@
 use crate::cli::Pokemon as Args;
 use anyhow::Result;
 use serde::Deserialize;
-use prettytable::{Table, cell, row, format};
+use prettytable::{Table, format, Row, Cell};
 
 #[derive(Debug, Deserialize)]
 #[allow(dead_code)]
@@ -11,6 +11,16 @@ pub struct Pokemon {
     pub type1: String,
     pub type2: String,
     pub catch_rate: i32,
+}
+
+impl Pokemon {
+    const PKMN_COLS: [&'static str;5] = [
+        "number",
+        "name",
+        "type1",
+        "type2",
+        "catch_rate"
+    ];
 }
 
 impl Default for Pokemon {
@@ -40,19 +50,36 @@ fn _find_pokemon(input: &String, category: &String) -> Result<Vec<Pokemon>> {
     Ok(vect)
 }
 
-fn _print_pokemon(pokemon: Vec<Pokemon>) {
+fn _get_filtered_cells(vec: [String;5], filter: &String) -> Vec<Cell> {
+    let mut result: Vec<Cell> = Vec::new();
+    for (i,col) in Pokemon::PKMN_COLS.into_iter().enumerate() {
+        if filter == "all" || filter.contains(col) {
+            result.push(Cell::new(vec[i].as_str()));
+        }
+    }
+    result
+}
+
+fn _print_pokemon(pokemon: Vec<Pokemon>, filter: &String) {
     let mut table = Table::new();
     table.set_format(*format::consts::FORMAT_NO_BORDER_LINE_SEPARATOR);
-    table.set_titles(row!["DEX#","NAME","TYPE1","TYPE2","CATCH_RATE"]);
+    table.set_titles(Row::new(_get_filtered_cells(
+        ["DEX#".to_string(),"NAME".to_string(),"TYPE1".to_string(),"TYPE2".to_string(),"CATCH_RATE".to_string()],
+        filter
+    )));
     for p in pokemon {
-        table.add_row(row![
-            p.number.to_string(),
-            p.name,
-            p.type1,
-            p.type2,
-            p.catch_rate.to_string(),
-        ]);
+        table.add_row(Row::new(_get_filtered_cells(
+            [
+                p.number.to_string(),
+                p.name,
+                p.type1,
+                p.type2,
+                p.catch_rate.to_string(),
+            ],
+            filter
+        )));
     }
+
     table.printstd();
 }
 
@@ -61,7 +88,7 @@ pub fn use_pokemon(args: &Args) {
     let pokemon = _find_pokemon(&(args.query),&(args.category))
         .unwrap_or_default();
     if pokemon.len() > 0 {
-        _print_pokemon(pokemon);
+        _print_pokemon(pokemon, &args.filter);
     } else {
         println!("Pokemon {} not found.", args.query);
     }
